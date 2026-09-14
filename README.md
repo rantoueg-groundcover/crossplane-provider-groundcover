@@ -55,7 +55,7 @@ Edit a manifest and re-apply to update; `kubectl delete` removes the resource fr
 | Dashboard | [`examples/dashboard.yaml`](./examples/dashboard.yaml) | `kubectl explain dashboard.spec.forProvider` for the schema |
 | ConnectedAppJson | [`examples/connectedappjson.yaml`](./examples/connectedappjson.yaml) | sensitive `data` supplied via a Secret reference |
 | DataIntegration | [`AWS`](./examples/dataintegration-aws.yaml), [`PostgreSQL DB monitoring`](./examples/dataintegration-postgresql.yaml), [`ClickHouse DB monitoring`](./examples/dataintegration-clickhouse.yaml) | AWS capability blocks and database health/query-statistics collection; see [Data integrations](#data-integrations) |
-| Secret | — | `secrets.groundcover.com` `kind: Secret`, not a core Kubernetes Secret. Produces the `secretRef::store::<id>` references used inside a DataIntegration `config` |
+| Secret | [`examples/secret.yaml`](./examples/secret.yaml) | `secrets.groundcover.com` `kind: Secret`, not a core Kubernetes Secret. Produces the `secretRef::store::<id>` references used inside a DataIntegration `config` |
 | NotificationRoute | [`examples/notificationroute.yaml`](./examples/notificationroute.yaml) | routes issues to connected apps by status; references a connected-app id |
 | Install / config | [`examples/provider.yaml`](./examples/provider.yaml), [`examples/providerconfig.yaml`](./examples/providerconfig.yaml) | |
 
@@ -163,7 +163,8 @@ The backend validates `config` and rejects it whole, so a bad manifest surfaces 
 - Unknown keys are rejected at **every** level, including inside a capability block — and
   `regions`, `roleArn`, `stsRegion` or `scrapeInterval` inside a block is an unknown key.
 - `regions` and `scrapeInterval` are required at the root. `scrapeInterval` has an inclusive
-  `1m` minimum.
+  `1m` minimum and accepts either a duration string (`"5m"`, as in the example) or a
+  nanosecond integer (`300000000000`, as in the Terraform docs).
 - At least one capability block must be present **and** enabled. An empty object such as
   `"vpc": {}` counts as absent, so always set at least one field inside a block.
 
@@ -197,6 +198,7 @@ automatically.
 ## Status
 
 Resource reconciliation (monitor, dashboard, connected-app-json, notification-route) is
-**verified end-to-end** against a live backend, in CI on every change. The package builds
+**verified end-to-end** against a live backend, in CI on every change. DataIntegration and
+Secret are not in that e2e job yet. The package builds
 (`make xpkg`) but is **not published** yet — build/run from source for now (see
 [DEVELOPING.md](./DEVELOPING.md)).

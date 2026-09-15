@@ -16,7 +16,7 @@ TERRAFORM_PROVIDER_DOWNLOAD_NAME ?= terraform-provider-groundcover
 
 PROVIDER_SCHEMA ?= config/schema.json
 
-GOIMPORTS ?= go run golang.org/x/tools/cmd/goimports@latest
+GOIMPORTS ?= go run golang.org/x/tools/cmd/goimports@v0.43.0
 
 # controller-gen produces deepcopy methods; angryjet produces the crossplane Managed /
 # ManagedList method sets. The upjet pipeline emits neither. angryjet is pinned to the
@@ -57,7 +57,7 @@ schema: ## Produce config/schema.json from the Terraform provider (requires terr
 .PHONY: generate
 generate: $(PROVIDER_SCHEMA) ## Run the upjet generation pipeline (CRDs, controllers, examples).
 	@echo ">> installing goimports (upjet's pipeline shells out to the goimports binary on PATH)"
-	go install golang.org/x/tools/cmd/goimports@latest
+	go install golang.org/x/tools/cmd/goimports@v0.43.0
 	@echo ">> running upjet generation pipeline"
 	go run ./cmd/generator
 	@echo ">> generating deepcopy methods (controller-gen)"
